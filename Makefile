@@ -1,28 +1,41 @@
 CC := gcc
-CCFLAGS := -ansi
+CCFLAGS := 
 AS := as
 ASFLAGS := 
 
 all: bin/main
 
-bin/main: build/main.o build/web.o
+debug: bin/debug
+
+bin/debug: build/debug.o build/web.o
 	@mkdir -p bin
 	@#ld -o $@ $^
 	$(CC) $(CCFLAGS) -o $@ $^
 
-build/main.o: src/main.c
+bin/main: build/crt0.o build/main.o build/web.o
+	@mkdir -p bin
+	ld -o $@ $^
+
+build/%.o: src/%.c
 	@mkdir -p build
 	$(CC) $(CCFLAGS) -o $@ -c $^
 
-build/web.o: src/web.s
+build/%.o: src/%.s
 	@mkdir -p build
 	$(AS) -o $@ $^
 
+#build/main.o: src/main.c
+#	@mkdir -p build
+#	$(CC) $(CCFLAGS) -o $@ -c $^
+
+#build/web.o: src/web.s
+#	@mkdir -p build
+#	$(AS) -o $@ $^
+
 .PHONY: clean
 clean:
-	@rm -f bin/main
-	@rm -f build/main.o
-	@rm -f build/web.o
+	@rm -f bin/main bin/debug
+	@rm -f build/*.o
 	rm -fd bin
 	rm -fd build
 
